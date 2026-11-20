@@ -1,0 +1,27 @@
+import {normalName,leaderboardView,toCSV} from './player-data.js';
+const $=id=>document.getElementById(id);
+export function createKiosk({onBegin,onReset,onResults,onGesture,getIdleRemaining=()=>10000}){
+ let player='',roundId='',resetAt=0,interval,resultAt=0,resultRows=[],resultId='',spotlightExpired=false;
+ let resetting=false;async function resetLeaderboard(){if(resetting)return;resetting=true;try{if(window.glowPlayers)await window.glowPlayers.reset();else localStorage.setItem('glow-kiosk-session',crypto.randomUUID());onReset();$('entry-error').textContent='Fresh leaderboard. Previous scores are saved.';}catch{$('entry-error').textContent='Could not reset leaderboard. Previous scores are safe.';}finally{resetting=false;}}
+ if(window.glowPlayers)window.glowPlayers.onReset(resetLeaderboard);else addEventListener('keydown',e=>{if(e.ctrlKey&&e.key.toLowerCase()==='r'){e.preventDefault();resetLeaderboard();}});
+ const input=$('player-name'),keyboard=$('keyboard');
+ for(const row of ['QWERTYUIOP','ASDFGHJKL','ZXCVBNM']){const line=document.createElement('div');for(const letter of row)key(line,letter,()=>insert(letter));keyboard.append(line);}
+ const line=document.createElement('div');key(line,'⌫',()=>{const pos=input.selectionStart??input.value.length,end=input.selectionEnd??pos;input.setRangeText('',Math.max(0,pos-(end===pos?1:0)),end,'end');});key(line,'Space',()=>insert(' '));key(line,'Done',()=>keyboard.classList.add('hidden'));keyboard.append(line);
+ function key(line,label,action){const button=document.createElement('button');button.type='button';button.textContent=label;button.setAttribute('aria-label',label==='⌫'?'Backspace':label);button.onpointerdown=e=>e.preventDefault();button.onclick=()=>{onGesture();action();};line.append(button);}
+ function insert(value){if(input.value.length>=40)return;const pos=input.selectionStart??input.value.length;input.setRangeText(value,pos,input.selectionEnd??pos,'end');$('entry-error').textContent='';}
+ input.onfocus=input.onclick=()=>{keyboard.classList.remove('hidden');onGesture();};
+ input.oninput=()=>{$('entry-error').textContent='';};
+ $('entry-form').onsubmit=e=>{e.preventDefault();player=normalName(input.value);if(!player){$('entry-error').textContent='Please enter your name.';input.focus();return;}input.value=player;roundId=crypto.randomUUID();keyboard.classList.add('hidden');input.blur();document.body.dataset.screen='instructions';onBegin();};
+ $('new-game').onclick=()=>onReset();
+ document.body.dataset.screen='entry';
+ function readLocal(){try{return JSON.parse(localStorage.getItem('glow-kiosk-players')||'[]');}catch{return[];}}
+ function showRows(rows,id){resultRows=rows;resultId=id;const view=leaderboardView(rows,id,Date.now()-resultAt);$('leader-list').replaceChildren();for(const [index,row]of view.top.entries()){const item=document.createElement('li');if(row.id===id)item.className='current';const rank=document.createElement('span'),name=document.createElement('span'),score=document.createElement('strong');rank.textContent=String(index+1).padStart(2,'0');name.textContent=row.name;score.textContent=String(row.score);item.append(rank,name,score);$('leader-list').append(item);}$('player-result').replaceChildren();$('player-result').hidden=!view.spotlight;if(view.spotlight){const rank=document.createElement('span'),name=document.createElement('span'),score=document.createElement('strong');rank.textContent='#'+view.spotlight.rank;name.textContent=view.spotlight.name;score.textContent=String(view.spotlight.score);$('player-result').append(rank,name,score);}}
+ async function finish(score){
+  const record={id:roundId,name:player,score,playedAt:new Date().toISOString(),sessionId:localStorage.getItem('glow-kiosk-session')||'legacy'};document.body.dataset.screen='results';$('leaderboard').classList.remove('hidden');onResults();resultAt=Date.now();spotlightExpired=false;$('save-status').textContent='Saving score…';resetAt=Date.now()+15000;$('reset-seconds').textContent='15';clearInterval(interval);interval=setInterval(()=>{if(!spotlightExpired&&Date.now()-resultAt>=5000){spotlightExpired=true;showRows(resultRows,resultId);}const left=Math.max(0,Math.ceil((resetAt-Date.now())/1000));$('reset-seconds').textContent=String(left);if(!left){clearInterval(interval);onReset();}},200);
+  const local=readLocal();if(!local.some(row=>row.id===record.id))local.push(record);showRows(local.filter(r=>(r.sessionId||'legacy')===record.sessionId),record.id);try{localStorage.setItem('glow-kiosk-players',JSON.stringify(local));}catch{}
+  try{if(window.glowPlayers){const result=await window.glowPlayers.save(record);if(roundId!==record.id)return;showRows(result.rows,record.id);$('save-status').textContent='';}else{$('save-status').replaceChildren();const exportButton=document.createElement('button');exportButton.className='export-csv';exportButton.textContent='Save CSV';exportButton.onclick=()=>{const url=URL.createObjectURL(new Blob(['\ufeff'+toCSV(readLocal())],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='players.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};$('save-status').append(exportButton);}}
+  catch{$('save-status').textContent='CSV could not be saved. Score retained locally; please check the event laptop.';}
+ }
+ function clear(){clearInterval(interval);input.value='';player='';roundId='';keyboard.classList.add('hidden');$('entry-error').textContent='';$('leader-list').replaceChildren();$('player-result').textContent='';}
+ return{finish,clear};
+}

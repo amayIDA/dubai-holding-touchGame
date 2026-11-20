@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {InactivityTimer} from '../src/inactivity.js';
+test('inactivity expires at ten seconds, real activity extends it and wall clock gaps count',()=>{let now=0;const idle=new InactivityTimer(10000,()=>now);now=9999;assert.equal(idle.expired(),false);idle.touch();now=19998;assert.equal(idle.remaining(),1);now=19999;assert.equal(idle.expired(),true);idle.touch();assert.equal(idle.remaining(),10000);now=100000;assert.equal(idle.expired(),true);});

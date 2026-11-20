@@ -1,0 +1,47 @@
+{
+  "name": "5k-led-run-glow-tap",
+  "version": "10.2.0",
+  "private": true,
+  "description": "Neon touch game with music, reactive aurora shaders and interactive onboarding",
+  "author": "Game Concept",
+  "type": "module",
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "start": "electron .",
+    "test": "node --test tests/*.test.js",
+    "build:exe": "npm run build && electron-builder --win portable"
+  },
+  "dependencies": {
+    "three": "0.187.0"
+  },
+  "devDependencies": {
+    "vite": "8.3.8",
+    "electron": "45.4.1",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "com.ledrun.glowtap",
+    "productName": "5K LED Run - Glow Tap",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "desktop/**/*",
+      "package.json",
+      "src/player-data.js"
+    ],
+    "asar": true,
+    "win": {
+      "target": "portable",
+      "signAndEditExecutable": false,
+      "artifactName": "Glow-Tap-Leaderboard-${arch}.exe"
+    },
+    "portable": {
+      "requestExecutionLevel": "user"
+    },
+    "compression": "normal"
+  }
+}
