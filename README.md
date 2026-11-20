@@ -8,6 +8,12 @@ Run `release/Glow-Tap-Leaderboard-x64.exe`. The portable app contains Electron, 
 
 PLAY.bat automatically downloads a private Node.js 24 LTS runtime, verifies its checksum, installs locked dependencies and builds and starts the game. First setup needs internet; administrator access and global Node.js installation are not required. BUILD-EXE.bat rebuilds the portable executable in release/.
 
+## Play on a Mac
+
+Double-click PLAY.command. On first launch it downloads a private Node.js 24 LTS runtime into .runtime/ (checksum-verified, nothing installed system-wide), installs the locked dependencies including Electron, builds the game and opens it fullscreen. First setup needs internet; later launches work offline. Esc or Cmd+Ctrl+F leaves fullscreen, Cmd+Q quits.
+
+If macOS says the file can't be opened or you lack access privileges, open Terminal and run: bash followed by a space, then drag PLAY.command into the window and press Return. Alternatively, right-click PLAY.command and choose Open once.
+
 ## Same touch rules
 
 - Tap cyan plus objects for 10 points. Golden stars give 40.

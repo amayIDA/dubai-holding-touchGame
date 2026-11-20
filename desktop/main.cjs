@@ -3,11 +3,12 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 protocol.registerSchemesAsPrivileged([{ scheme: 'glowtap', privileges: { standard: true, secure: true, supportFetchAPI: true } }]);
 function openGame() {
-  const win = new BrowserWindow({ width: 1440, height: 960, minWidth: 700, minHeight: 560, title: '5K LED Run - Glow Tap', backgroundColor: '#08051d', autoHideMenuBar: true, webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true, preload: path.join(__dirname,'preload.cjs') } });
+  const win = new BrowserWindow({ width: 1440, height: 960, minWidth: 700, minHeight: 560, title: '5K LED Run - Glow Tap', fullscreen: true, backgroundColor: '#08051d', autoHideMenuBar: true, webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true, preload: path.join(__dirname,'preload.cjs') } });
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   win.webContents.on('will-navigate', (event, url) => { if (!url.startsWith('glowtap://game/')) event.preventDefault(); });
   win.webContents.on('before-input-event', (event, input) => {
     if(input.type==='keyDown'&&input.control&&input.key.toLowerCase()==='r'){event.preventDefault();win.webContents.send('players:reset-request');return;}
+    if (input.type === 'keyDown' && input.key.toLowerCase() === 'f' && input.meta && input.control) { win.setFullScreen(!win.isFullScreen()); event.preventDefault(); }
     if (input.type === 'keyDown' && input.key === 'F11') { win.setFullScreen(!win.isFullScreen()); event.preventDefault(); }
     if (input.type === 'keyDown' && input.key === 'Escape' && win.isFullScreen()) win.setFullScreen(false);
   });
@@ -31,6 +32,6 @@ app.whenReady().then(() => {
   openGame();
   app.on('activate', () => { if (!BrowserWindow.getAllWindows().length) openGame(); });
 });
-app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
+app.on('window-all-closed', () => app.quit());
 
 
