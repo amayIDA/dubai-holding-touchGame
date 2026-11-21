@@ -30,3 +30,5 @@ body[data-screen="entry"] #overlay,body[data-screen="results"] #leaderboard{back
 @media(max-height:700px) and (min-width:701px){.entry{padding-top:100px;gap:18px 50px}.entry-hero h1{font-size:74px}.entry form{padding:23px}.entry:has(.keyboard:not(.hidden)) .entry-hero h1{font-size:60px}.entry .keyboard button{min-height:33px}.entry .keyboard{padding:6px}.entry:has(.keyboard:not(.hidden)) form{padding:16px 23px}}
 @media(max-height:680px) and (max-width:700px){.entry{padding-top:90px;gap:15px}.entry-hero h1{font-size:47px;margin-bottom:9px}.entry-hero .kicker{display:none}.entry:has(.keyboard:not(.hidden)) .entry-hero{display:none}.entry:has(.keyboard:not(.hidden)) .keyboard button{min-height:32px}}
 .new-game{margin-top:17px;padding:13px 27px;min-width:190px;font-size:12px}@media(max-height:700px){.new-game{margin-top:10px;padding:11px 25px}}
+/* Touch-screen kiosk: never show the mouse pointer */
+html,body,*,*::before,*::after{cursor:none!important}
