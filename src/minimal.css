@@ -32,3 +32,5 @@ body[data-screen="entry"] #overlay,body[data-screen="results"] #leaderboard{back
 .new-game{margin-top:17px;padding:13px 27px;min-width:190px;font-size:12px}@media(max-height:700px){.new-game{margin-top:10px;padding:11px 25px}}
 /* Touch-screen kiosk: never show the mouse pointer */
 html,body,*,*::before,*::after{cursor:none!important}
+/* Logos: larger Dubai Holding logo, and more breathing room above the logos on the start screen */
+@media(min-width:801px){header .brand{width:230px;height:115px;object-position:left center}body[data-screen="entry"] header{top:70px;left:70px;right:70px}body[data-screen="entry"] header .event{top:0}}
