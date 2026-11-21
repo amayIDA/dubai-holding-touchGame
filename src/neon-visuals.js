@@ -94,7 +94,7 @@ export function createNeonVisuals(canvas,demoCanvas,reduced){
   }
   function resize(w,h){renderer.setSize(w,h);composer.setSize(w,h);Object.assign(camera,{left:-w/2,right:w/2,top:h/2,bottom:-h/2});camera.updateProjectionMatrix();background.resize(w,h);resizeDemo();}
   function update(time,dt,rush,beat=0){
-    const screen=document.body.dataset.screen;const ambient=['entry','results'].includes(screen);ambience.forEach((g,i)=>{g.visible=ambient;const w=innerWidth,h=innerHeight;g.position.set((i?1:-1)*(screen==='entry'&&w>800?-1:1)*w*(w<600?.38:.38),h*(i?-.37:w<600?.34:.25)+(reduced?0:Math.sin(time*.7+i*2)*14),-5);g.scale.setScalar(w<600?28:i?65:76);});
+    const screen=document.body.dataset.screen;const ambient=['entry','results'].includes(screen);ambience.forEach((g,i)=>{g.visible=ambient;const w=innerWidth,h=innerHeight;g.position.set((i?1:-1)*(w>800?-1:1)*w*(w<600?.38:.38),h*(i?-.37:w<600?.34:.25)+(reduced?0:Math.sin(time*.7+i*2)*14),-5);g.scale.setScalar(w<600?28:i?65:76);});
     previewTime=time;background.update(time,{beat,rush,reduced});
     for(const mat of Object.values(materials)){mat.uniforms.uTime.value=reduced?0:time;mat.uniforms.uRush.value=rush?1:0;}
     for(const item of items){const p=item.phase;item.group.rotation.x=.22+(reduced?0:Math.sin(time*1.35+p)*.12);item.group.rotation.y=.28+(reduced?0:Math.sin(time*1.1+p)*.24);item.group.rotation.z=item.kind==='gold'?(reduced?.08:Math.sin(time*.65+p)*.12):0;

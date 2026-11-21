@@ -32,5 +32,21 @@ body[data-screen="entry"] #overlay,body[data-screen="results"] #leaderboard{back
 .new-game{margin-top:17px;padding:13px 27px;min-width:190px;font-size:12px}@media(max-height:700px){.new-game{margin-top:10px;padding:11px 25px}}
 /* Touch-screen kiosk: never show the mouse pointer */
 html,body,*,*::before,*::after{cursor:none!important}
-/* Logos: larger Dubai Holding logo, and more breathing room above the logos on the start screen */
-@media(min-width:801px){header .brand{width:230px;height:115px;object-position:left center}body[data-screen="entry"] header{top:70px;left:70px;right:70px}body[data-screen="entry"] header .event{top:0}}
+/* Logos: same size and position on every screen (large screens) */
+@media(min-width:801px){
+header,body[data-screen] header{top:70px;left:70px;right:70px}
+header .brand{width:230px;height:115px;object-position:left center}
+header .event,body[data-screen] header .event{width:150px;height:119px;top:0;filter:drop-shadow(0 0 20px #e93cac20)}
+/* Game screen: shift score bar and play area below the larger header */
+.hud{top:205px}.streak{top:298px}.toast{top:306px}.board{top:322px;bottom:125px}
+/* Instructions and leaderboard screens: keep content clear of the logos */
+.learn-overlay{padding-top:205px}.leader-content{padding-top:205px}
+}
+/* Shorter screens (e.g. 1366x768): slightly smaller logos, same on every screen */
+@media(min-width:801px) and (max-height:900px){
+header,body[data-screen] header{top:40px;left:50px;right:50px}
+header .brand{width:180px;height:90px}
+header .event,body[data-screen] header .event{width:110px;height:87px}
+.hud{top:135px}.streak{top:222px}.toast{top:230px}.board{top:246px;bottom:118px}
+.learn-overlay{padding-top:135px}.learn-content .kicker{display:none}.leader-content{padding-top:135px}
+}
